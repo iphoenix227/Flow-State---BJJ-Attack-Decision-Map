@@ -18,6 +18,7 @@ import {
   Grip as GripIcon,
   NotebookPen,
 } from "lucide-react";
+import { DataBackup } from "@/components/DataBackup/DataBackup";
 
 const familyOrder = [
   ["standing", "Standing"],
@@ -403,6 +404,8 @@ const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
               })}
             </div>
           </div>
+
+          <DataBackup />
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash2, Pencil, Star, Plus, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { scrollPageClass, scrollPageInnerClass, touchInputClass } from '@/lib/layout';
 import type { TrainingLogEntry } from '@/data/trainingLog';
 
 const RESULT_TONES: Record<string, string> = {
@@ -105,8 +106,8 @@ export const TrainingLogPage = () => {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-background p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className={scrollPageClass}>
+      <div className={scrollPageInnerClass}>
         <header className="mb-4 flex items-end justify-between flex-wrap gap-3">
           <div>
             <h2 className="font-display text-2xl text-gold tracking-wider">📓 Training Log</h2>

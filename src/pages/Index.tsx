@@ -14,6 +14,7 @@ import { TrainingLogPage } from "@/components/TrainingLogPage/TrainingLogPage";
 import { useAppStore } from "@/store/useAppStore";
 import { attackActionCount, partnerResponseCount } from "@/lib/bjj";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { InstallPrompt } from "@/components/InstallPrompt/InstallPrompt";
 import { useEffect } from "react";
 
 const Index = () => {
@@ -63,6 +64,7 @@ const Index = () => {
         </main>
         {view === "tree" && <NodeDetailPanel />}
       </div>
+      <InstallPrompt />
     </div>
   );
 };

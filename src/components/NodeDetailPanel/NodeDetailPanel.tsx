@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ReactionCard } from '@/components/ReactionsPage/ReactionsPage';
 import { GripCard } from '@/components/GripsPage/GripsPage';
 
@@ -27,6 +28,7 @@ const Pill = ({ children, tone = 'default' }: any) => (
 );
 
 export const NodeDetailPanel = () => {
+  const isMobile = useIsMobile();
   const { selectedNodeId, setSelectedNodeId, drilledNodes, toggleDrilled, videoUrls, setVideoUrl } = useAppStore();
   const row = attackingMap.find(r => String(r.node_id) === selectedNodeId);
   const [videoInput, setVideoInput] = useState('');
@@ -81,13 +83,27 @@ export const NodeDetailPanel = () => {
 
   return (
     <AnimatePresence>
+      {open && isMobile && (
+        <motion.div
+          key="detail-backdrop"
+          role="button"
+          tabIndex={-1}
+          aria-label="Close move details"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 z-20 bg-black/50 md:hidden"
+          onClick={() => setSelectedNodeId(null)}
+          onKeyDown={(e) => e.key === "Escape" && setSelectedNodeId(null)}
+        />
+      )}
       {open && (
         <motion.aside
           initial={{ x: 400, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 400, opacity: 0 }}
           transition={{ type: 'spring', damping: 28, stiffness: 240 }}
-          className="absolute md:relative right-0 top-0 h-full w-full md:w-[380px] bg-card border-l border-border shadow-2xl z-30 flex flex-col"
+          className="absolute md:relative right-0 top-0 h-full w-full md:w-[380px] bg-card border-l border-border shadow-2xl z-30 flex flex-col pb-[env(safe-area-inset-bottom)]"
         >
           <div className="p-4 border-b border-border flex items-start gap-2">
             <div className="flex-1 min-w-0">

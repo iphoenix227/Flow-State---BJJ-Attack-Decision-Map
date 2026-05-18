@@ -53,6 +53,14 @@ const POS_KEY = "bjj_last_position_v1";
 const LOG_KEY = "bjj_training_log";
 const MISTAKES_KEY = "bjj_show_mistakes_v1";
 const MISTAKES_ONLY_KEY = "bjj_mistakes_only_v1";
+const FILTER_KEY = "bjj_filters_v1";
+
+const defaultFilters: AppFilters = {
+  gi: ["gi"],
+  skills: ["White"],
+  priorities: [],
+  chains: [],
+};
 
 const load = <T>(k: string, fallback: T): T => {
   try {
@@ -99,8 +107,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   selectedNodeId: null,
   setSelectedNodeId: (id) => set({ selectedNodeId: id }),
-  filters: { gi: ["gi"], skills: ["White"], priorities: [], chains: [] },
-  setFilters: (f) => set({ filters: { ...get().filters, ...f } }),
+  filters: load<AppFilters>(FILTER_KEY, defaultFilters),
+  setFilters: (f) => {
+    const next = { ...get().filters, ...f };
+    localStorage.setItem(FILTER_KEY, JSON.stringify(next));
+    set({ filters: next });
+  },
   showMistakeReactions: load<boolean>(MISTAKES_KEY, false),
   setShowMistakeReactions: (show) => {
     localStorage.setItem(MISTAKES_KEY, JSON.stringify(show));

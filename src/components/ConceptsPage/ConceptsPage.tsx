@@ -1,5 +1,6 @@
 import { concepts } from '@/data/concepts';
 import { cn } from '@/lib/utils';
+import { scrollPageClass, scrollPageInnerClass } from '@/lib/layout';
 
 const typeTone = (t: string) => {
   const v = t.toLowerCase();
@@ -11,8 +12,8 @@ const typeTone = (t: string) => {
 };
 
 export const ConceptsPage = () => (
-  <div className="h-full overflow-y-auto scrollbar-thin">
-    <div className="max-w-6xl mx-auto p-6">
+  <div className={scrollPageClass}>
+    <div className={scrollPageInnerClass}>
       <h1 className="font-display text-3xl text-gold mb-1">Concepts</h1>
       <p className="text-muted-foreground text-xs uppercase tracking-widest mb-6">{concepts.length} guiding principles</p>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">

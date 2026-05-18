@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { grips, type Grip } from '@/data/grips';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { scrollPageClass, scrollPageInnerClass, touchInputClass } from '@/lib/layout';
 
 const GRIP_BORDERS: Record<string, string> = {
   'Gi grip': 'border-blue-500/60',
@@ -30,14 +31,14 @@ export const GripsPage = () => {
   }, [q, type, gi]);
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-background p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className={scrollPageClass}>
+      <div className={scrollPageInnerClass}>
         <header className="mb-6">
           <h2 className="font-display text-2xl text-gold tracking-wider">✊ Grips Library</h2>
           <p className="text-xs text-muted-foreground mt-1">{grips.length} grips, frames, hooks and ties — color-coded by type.</p>
         </header>
         <div className="flex flex-wrap gap-2 mb-5">
-          <Input value={q} onChange={e => setQ(e.target.value)} placeholder="Search grips…" className="max-w-xs" />
+          <Input value={q} onChange={e => setQ(e.target.value)} placeholder="Search grips…" className={cn('max-w-xs', touchInputClass)} />
           <select value={type} onChange={e => setType(e.target.value)} className="bg-card border border-border rounded px-2 py-1 text-xs text-foreground">
             {GRIP_TYPES.map(t => <option key={t} value={t}>{t === 'all' ? 'All types' : t}</option>)}
           </select>

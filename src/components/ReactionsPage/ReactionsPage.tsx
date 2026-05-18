@@ -2,6 +2,7 @@ import { useMemo, useState, useRef } from 'react';
 import { reactions, type Reaction } from '@/data/reactions';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { scrollPageClass, scrollPageInnerClass, touchInputClass } from '@/lib/layout';
 
 const TYPE_TONES: Record<string, string> = {
   offensive: 'bg-amber-500/15 text-amber-400 border-amber-500/40',
@@ -33,14 +34,14 @@ export const ReactionsPage = () => {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-background p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className={scrollPageClass}>
+      <div className={scrollPageInnerClass}>
         <header className="mb-6">
           <h2 className="font-display text-2xl text-gold tracking-wider">🤜 Reactions Library</h2>
           <p className="text-xs text-muted-foreground mt-1">{reactions.length} partner reactions catalogued. Use these to predict the next decision branch.</p>
         </header>
         <div className="flex flex-wrap gap-2 mb-5">
-          <Input value={q} onChange={e => setQ(e.target.value)} placeholder="Search reactions…" className="max-w-xs" />
+          <Input value={q} onChange={e => setQ(e.target.value)} placeholder="Search reactions…" className={cn('max-w-xs', touchInputClass)} />
           {(['all', 'offensive', 'defensive', 'neutral'] as const).map(t => (
             <button key={t} onClick={() => setType(t)} className={cn(
               'px-3 py-1 text-[11px] uppercase tracking-wider rounded border transition-colors',
