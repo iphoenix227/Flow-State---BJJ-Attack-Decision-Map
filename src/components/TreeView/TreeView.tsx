@@ -1,5 +1,6 @@
 import { useMemo, useCallback, useEffect, useState, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { treeOverlayClass } from "@/lib/layout";
 import ReactFlow, {
   Background,
   Controls,
@@ -38,6 +39,10 @@ const nodeTypes = {
   terminal: TerminalNode,
 };
 
+/** Delay single-tap expand on mobile so double-tap can open details without toggling twice. */
+const MOBILE_TAP_DELAY_MS = 280;
+const MOBILE_DOUBLE_TAP_MS = 350;
+
 const TreeViewInner = () => {
   const isMobile = useIsMobile();
   const positionId = useAppStore((s) => s.positionId);
@@ -56,7 +61,9 @@ const TreeViewInner = () => {
   );
   const [pulseActionId, setPulseActionId] = useState<string | null>(null);
   const rf = useReactFlow();
-  const fitTimer = useRef<any>(null);
+  const fitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTapRef = useRef<{ nodeId: string; time: number } | null>(null);
 
   // Reset expansion on position change
   useEffect(() => {
@@ -325,25 +332,73 @@ const TreeViewInner = () => {
     }, 80);
   }, [expandedActions, expandedResponses, positionId, rf]);
 
-  const onNodeClick = useCallback(
-    (_: any, node: any) => {
-      if (node.type === "action") {
-        setExpandedActions((prev) => {
-          const n = new Set(prev);
-          n.has(node.id) ? n.delete(node.id) : n.add(node.id);
-          return n;
-        });
-      } else if (node.type === "response") {
-        setExpandedResponses((prev) => {
-          const n = new Set(prev);
-          n.has(node.id) ? n.delete(node.id) : n.add(node.id);
-          return n;
-        });
-      }
+  const toggleNodeExpansion = useCallback((node: { id: string; type?: string }) => {
+    if (node.type === "action") {
+      setExpandedActions((prev) => {
+        const n = new Set(prev);
+        n.has(node.id) ? n.delete(node.id) : n.add(node.id);
+        return n;
+      });
+    } else if (node.type === "response") {
+      setExpandedResponses((prev) => {
+        const n = new Set(prev);
+        n.has(node.id) ? n.delete(node.id) : n.add(node.id);
+        return n;
+      });
+    }
+  }, []);
+
+  const openNodeDetail = useCallback(
+    (node: { data?: { rowId?: string; rowIds?: string[] } }) => {
       const rid = node.data?.rowId || node.data?.rowIds?.[0];
       if (rid) setSelectedNodeId(rid);
     },
     [setSelectedNodeId],
+  );
+
+  const clearPendingTap = useCallback(() => {
+    if (pendingTapTimer.current) {
+      clearTimeout(pendingTapTimer.current);
+      pendingTapTimer.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => clearPendingTap(), [clearPendingTap]);
+
+  useEffect(() => {
+    clearPendingTap();
+    lastTapRef.current = null;
+  }, [positionId, clearPendingTap]);
+
+  const onNodeClick = useCallback(
+    (_: unknown, node: { id: string; type?: string; data?: { rowId?: string; rowIds?: string[] } }) => {
+      if (!isMobile) {
+        toggleNodeExpansion(node);
+        openNodeDetail(node);
+        return;
+      }
+
+      const now = Date.now();
+      const last = lastTapRef.current;
+      const isDoubleTap =
+        last?.nodeId === node.id && now - last.time < MOBILE_DOUBLE_TAP_MS;
+
+      if (isDoubleTap) {
+        lastTapRef.current = null;
+        clearPendingTap();
+        openNodeDetail(node);
+        return;
+      }
+
+      lastTapRef.current = { nodeId: node.id, time: now };
+      clearPendingTap();
+      pendingTapTimer.current = setTimeout(() => {
+        pendingTapTimer.current = null;
+        lastTapRef.current = null;
+        toggleNodeExpansion(node);
+      }, MOBILE_TAP_DELAY_MS);
+    },
+    [isMobile, toggleNodeExpansion, openNodeDetail, clearPendingTap],
   );
 
   const collapseAll = () => {
@@ -353,8 +408,14 @@ const TreeViewInner = () => {
 
   return (
     <div className="w-full h-full bg-background relative">
-      <div className="absolute top-3 right-3 z-10 flex gap-2">
+      <div className={treeOverlayClass}>
+        {isMobile && (
+          <p className="text-[9px] uppercase tracking-wider text-muted-foreground bg-card/80 backdrop-blur border border-border rounded px-2 py-1">
+            Double-tap node for details
+          </p>
+        )}
         <button
+          type="button"
           onClick={collapseAll}
           title="Collapse all"
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-border bg-card/80 backdrop-blur text-[10px] uppercase tracking-wider text-muted-foreground hover:text-gold hover:border-gold/60 transition-colors"

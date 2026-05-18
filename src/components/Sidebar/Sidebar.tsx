@@ -54,7 +54,7 @@ export const Sidebar = ({ mobileOpen, onMobileOpenChange }: SidebarProps) => {
       <Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
         <SheetContent
           side="left"
-          className="w-[min(100vw,320px)] max-w-[320px] p-0 gap-0 border-r border-border bg-sidebar z-[1200]"
+          className="w-[min(100vw,320px)] max-w-[320px] p-0 gap-0 border-r border-border bg-sidebar z-[1200] pt-[env(safe-area-inset-top,0px)]"
         >
           {content}
         </SheetContent>

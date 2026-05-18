@@ -15,6 +15,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { attackActionCount, partnerResponseCount } from "@/lib/bjj";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { InstallPrompt } from "@/components/InstallPrompt/InstallPrompt";
+import { appHeaderClass, appHeaderInnerClass } from "@/lib/layout";
 import { useEffect } from "react";
 
 const Index = () => {
@@ -28,25 +29,27 @@ const Index = () => {
 
   return (
     <div className="h-[100dvh] w-screen flex flex-col overflow-hidden bg-background app-shell">
-      <header className="h-14 border-b border-border flex items-center px-3 md:px-4 gap-2 md:gap-4 bg-card/40 backdrop-blur shrink-0 relative z-[1100] pt-[env(safe-area-inset-top)]">
-        {isMobile && (
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-            className="shrink-0 flex items-center justify-center w-10 h-10 rounded border border-border text-gold hover:border-gold/60 transition-colors"
-          >
-            <Menu size={18} />
-          </button>
-        )}
-        <h1 className="font-display text-sm md:text-base tracking-wider text-gold hidden sm:block truncate">
-          {isMobile ? "FLOW STATE" : "⛩ FLOW STATE · BJJ ATTACK DECISION MAP"}
-        </h1>
-        <div className="flex-1 flex justify-center min-w-0">
-          <SearchBar />
-        </div>
-        <div className="text-[10px] text-muted-foreground uppercase tracking-widest hidden md:block whitespace-nowrap">
-          v5 · {attackActionCount} attacks · {partnerResponseCount} responses
+      <header className={appHeaderClass}>
+        <div className={appHeaderInnerClass}>
+          {isMobile && (
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+              className="shrink-0 flex items-center justify-center w-10 h-10 rounded border border-border text-gold hover:border-gold/60 transition-colors"
+            >
+              <Menu size={18} />
+            </button>
+          )}
+          <h1 className="font-display text-sm md:text-base tracking-wider text-gold hidden sm:block truncate">
+            {isMobile ? "FLOW STATE" : "⛩ FLOW STATE · BJJ ATTACK DECISION MAP"}
+          </h1>
+          <div className="flex-1 flex justify-center min-w-0">
+            <SearchBar />
+          </div>
+          <div className="text-[10px] text-muted-foreground uppercase tracking-widest hidden md:block whitespace-nowrap">
+            v5 · {attackActionCount} attacks · {partnerResponseCount} responses
+          </div>
         </div>
       </header>
 

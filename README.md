@@ -41,8 +41,8 @@ Same V5 content as desktop: **149 attacks**, **272 partner responses**, mistake 
 
 - **Menu (☰)** — positions, filters, pages, and data backup (phone/tablet).
 - **Search** — moves, responses, and notes; tap a result to jump into the tree.
-- **Attack tree** — tap an action to expand; tap a response for follow-ups; pinch to zoom and drag to pan.
-- **Move panel** — tap a node for details, drill marking, and videos; tap outside the panel (or **X**) to close on mobile.
+- **Attack tree** — **single tap** an action or response to expand/collapse branches; **double-tap** a node to open move details. Pinch to zoom and drag to pan.
+- **Move panel** — double-tap a node for details, drill marking, and videos; tap outside the panel (or **X**) to close on mobile.
 
 ### Filters
 

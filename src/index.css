@@ -47,12 +47,18 @@
 
   * { @apply border-border; }
   html, body, #root { height: 100%; }
+  html {
+    /* iOS standalone / notch: extend background into safe areas */
+    background-color: hsl(var(--background));
+  }
   body {
     @apply bg-background text-foreground;
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   }
   .app-shell {
     min-height: 100dvh;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
   }
   h1,h2,h3,h4 { font-family: 'Oswald', 'Bebas Neue', system-ui, sans-serif; letter-spacing: 0.02em; }
 }
@@ -75,9 +81,14 @@
     min-width: 36px !important;
     min-height: 36px !important;
   }
+  .react-flow__panel.bottom.left {
+    bottom: max(0.75rem, env(safe-area-inset-bottom, 0px)) !important;
+    left: max(0.5rem, env(safe-area-inset-left, 0px)) !important;
+  }
   .react-flow__panel.top.right {
-    top: max(0.75rem, env(safe-area-inset-top)) !important;
-    right: max(0.5rem, env(safe-area-inset-right)) !important;
+    top: auto !important;
+    bottom: max(4.5rem, calc(0.75rem + env(safe-area-inset-bottom, 0px))) !important;
+    right: max(0.5rem, env(safe-area-inset-right, 0px)) !important;
   }
 }
 .react-flow__edge-text { fill: hsl(var(--foreground)) !important; font-family: inherit; font-size: 11px; }

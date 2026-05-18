@@ -135,7 +135,7 @@ export const PositionMapOverview = () => {
 
   return (
     <div className="w-full h-full bg-background relative">
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-card/90 backdrop-blur border border-border rounded-md px-4 py-2 pointer-events-none">
+      <div className="absolute max-md:bottom-4 max-md:top-auto md:top-4 left-1/2 -translate-x-1/2 z-10 bg-card/90 backdrop-blur border border-border rounded-md px-4 py-2 pointer-events-none max-md:mx-3 max-w-[calc(100%-1.5rem)] text-center">
         <div className="font-display text-sm text-gold">
           Position Map · Click any position to open its tree
         </div>
