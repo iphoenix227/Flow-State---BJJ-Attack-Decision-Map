@@ -1,0 +1,80 @@
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+
+# Linux
+*~
+
+# Logs
+*.log
+logs/
+*.out
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.nar.tmp
+hs_err_pid*
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# JetBrains
+.idea/
+*.iml
+out/
+
+# Build outputs
+build/
+dist/
+tmp/
+temp/
+
+# Misc
+*.tmp
+*.cache
+*.bak
+*.swp
+*.swo
+.DS_Store
