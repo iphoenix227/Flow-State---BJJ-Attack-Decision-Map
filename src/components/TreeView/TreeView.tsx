@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useEffect, useState, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import ReactFlow, {
   Background,
   Controls,
@@ -38,6 +39,7 @@ const nodeTypes = {
 };
 
 const TreeViewInner = () => {
+  const isMobile = useIsMobile();
   const positionId = useAppStore((s) => s.positionId);
   const filters = useAppStore((s) => s.filters);
   const showMistakeReactions = useAppStore((s) => s.showMistakeReactions);
@@ -367,28 +369,37 @@ const TreeViewInner = () => {
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
-        nodesDraggable
+        nodesDraggable={!isMobile}
         nodesConnectable={false}
         elementsSelectable
+        panOnDrag
+        panOnScroll={false}
+        zoomOnPinch
+        zoomOnDoubleClick={false}
         fitView
-        minZoom={0.2}
-        maxZoom={1.6}
+        minZoom={0.15}
+        maxZoom={isMobile ? 1.4 : 1.6}
         proOptions={{ hideAttribution: true }}
       >
         <Background color="hsl(var(--border))" gap={24} size={1} />
-        <Controls className="!bg-card !border !border-border" />
-        <MiniMap
-          nodeColor={(n) => {
-            if (n.type === "position") return "hsl(var(--gold))";
-            if (n.type === "action") return "hsl(var(--action))";
-            if (n.type === "response") return "hsl(var(--response))";
-            if (n.type === "terminal") return "hsl(var(--terminal))";
-            return "hsl(var(--followup))";
-          }}
-          maskColor="hsl(0 0% 0% / 0.6)"
-          pannable
-          zoomable
+        <Controls
+          className="!bg-card !border !border-border"
+          showInteractive={!isMobile}
         />
+        {!isMobile && (
+          <MiniMap
+            nodeColor={(n) => {
+              if (n.type === "position") return "hsl(var(--gold))";
+              if (n.type === "action") return "hsl(var(--action))";
+              if (n.type === "response") return "hsl(var(--response))";
+              if (n.type === "terminal") return "hsl(var(--terminal))";
+              return "hsl(var(--followup))";
+            }}
+            maskColor="hsl(0 0% 0% / 0.6)"
+            pannable
+            zoomable
+          />
+        )}
       </ReactFlow>
     </div>
   );

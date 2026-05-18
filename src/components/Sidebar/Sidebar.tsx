@@ -3,7 +3,12 @@ import { positions } from "@/data/positions";
 import { useAppStore } from "@/store/useAppStore";
 import { allChainFamilies, rowsForPosition } from "@/lib/bjj";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { GiRuleset, PriorityLevel, SkillLevel } from "@/types";
+import {
+  Sheet,
+  SheetContent,
+} from "@/components/ui/sheet";
 import {
   Map,
   Library,
@@ -32,7 +37,39 @@ const formatChainFamilyLabel = (value: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-export const Sidebar = () => {
+type SidebarProps = {
+  mobileOpen?: boolean;
+  onMobileOpenChange?: (open: boolean) => void;
+};
+
+export const Sidebar = ({ mobileOpen, onMobileOpenChange }: SidebarProps) => {
+  const isMobile = useIsMobile();
+  const content = (
+    <SidebarContent onNavigate={() => onMobileOpenChange?.(false)} />
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
+        <SheetContent
+          side="left"
+          className="w-[min(100vw,320px)] max-w-[320px] p-0 gap-0 border-r border-border bg-sidebar z-[1200]"
+        >
+          {content}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return (
+    <aside className="w-[280px] shrink-0 border-r border-border bg-sidebar h-full flex flex-col overflow-hidden">
+      {content}
+    </aside>
+  );
+};
+
+const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => {
+  const isMobile = useIsMobile();
   const {
     positionId,
     setPositionId,
@@ -70,9 +107,14 @@ export const Sidebar = () => {
     return "bg-gold";
   };
 
+  const goToView = (v: string) => {
+    setView(v as Parameters<typeof setView>[0]);
+    onNavigate?.();
+  };
+
   return (
-    <aside className="w-[280px] shrink-0 border-r border-border bg-sidebar h-full flex flex-col overflow-hidden">
-      <div className="p-4 border-b border-sidebar-border">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="p-4 border-b border-sidebar-border shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded bg-gold flex items-center justify-center text-background font-display font-bold">
             柔
@@ -86,7 +128,7 @@ export const Sidebar = () => {
         </div>
       </div>
 
-      <nav className="grid grid-cols-4 gap-1 p-2 border-b border-sidebar-border text-[10px]">
+      <nav className="grid grid-cols-4 gap-1 p-2 border-b border-sidebar-border text-[10px] shrink-0">
         {[
           { v: "tree", label: "Tree", icon: Map },
           { v: "reactions", label: "Reactions", icon: Hand },
@@ -98,9 +140,9 @@ export const Sidebar = () => {
         ].map(({ v, label, icon: Icon }) => (
           <button
             key={v}
-            onClick={() => setView(v as any)}
+            onClick={() => goToView(v)}
             className={cn(
-              "flex flex-col items-center gap-1 p-2 rounded transition-colors",
+              "flex flex-col items-center gap-1 p-2 rounded transition-colors min-h-[52px]",
               view === v
                 ? "bg-gold text-background"
                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
@@ -112,12 +154,15 @@ export const Sidebar = () => {
         ))}
       </nav>
 
-      <div className="flex-1 overflow-y-auto scrollbar-thin">
+      <div className="flex-1 overflow-y-auto scrollbar-thin overscroll-contain">
         <div className="p-3">
           <button
-            onClick={() => setView("overview")}
+            onClick={() => {
+              setView("overview");
+              onNavigate?.();
+            }}
             className={cn(
-              "w-full text-left p-2 rounded border text-xs uppercase tracking-wider mb-3 transition-colors",
+              "w-full text-left p-2 rounded border text-xs uppercase tracking-wider mb-3 transition-colors min-h-[40px]",
               view === "overview"
                 ? "border-gold bg-gold/10 text-gold"
                 : "border-border text-muted-foreground hover:border-gold/60 hover:text-gold",
@@ -148,9 +193,10 @@ export const Sidebar = () => {
                           onClick={() => {
                             setPositionId(p.position_id);
                             setView("tree");
+                            onNavigate?.();
                           }}
                           className={cn(
-                            "w-full text-left px-2.5 py-2 rounded border text-xs transition-all",
+                            "w-full text-left px-2.5 py-2 rounded border text-xs transition-all min-h-[44px]",
                             active
                               ? "border-gold bg-gold/15 text-foreground glow-gold"
                               : "border-border bg-card hover:border-gold/50",
@@ -191,7 +237,7 @@ export const Sidebar = () => {
           )}
         </div>
 
-        <div className="p-3 border-t border-sidebar-border">
+        <div className="p-3 border-t border-sidebar-border pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <div className="flex items-center justify-between mb-2">
             <div className="text-[10px] text-muted-foreground uppercase tracking-widest">
               Filters
@@ -205,13 +251,15 @@ export const Sidebar = () => {
                   chains: [],
                 })
               }
-              className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-gold transition-colors"
+              className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-gold transition-colors min-h-[32px] px-1"
             >
               ✕ Clear
             </button>
           </div>
           <p className="text-[9px] text-muted-foreground/80 mb-2 leading-snug">
-            Ctrl+click to combine filters
+            {isMobile
+              ? "Tap pills to combine filters"
+              : "Ctrl+click to combine filters"}
           </p>
 
           <FilterRow label="Ruleset">
@@ -229,6 +277,7 @@ export const Sidebar = () => {
                       filters.gi,
                       v === "both" ? null : v,
                       e,
+                      isMobile,
                     ) as GiRuleset[],
                   })
                 }
@@ -255,6 +304,7 @@ export const Sidebar = () => {
                       filters.skills,
                       v === "All" ? null : v,
                       e,
+                      isMobile,
                     ) as SkillLevel[],
                   })
                 }
@@ -279,6 +329,7 @@ export const Sidebar = () => {
                       filters.priorities,
                       v === "All" ? null : v,
                       e,
+                      isMobile,
                     ) as PriorityLevel[],
                   })
                 }
@@ -302,22 +353,22 @@ export const Sidebar = () => {
                 Partner mistake
               </div>
             </div>
-            <label className="flex items-center gap-2 text-[10px] cursor-pointer text-muted-foreground hover:text-foreground">
+            <label className="flex items-center gap-2 text-[10px] cursor-pointer text-muted-foreground hover:text-foreground min-h-[36px]">
               <input
                 type="checkbox"
                 checked={showMistakeReactions}
                 onChange={(e) => setShowMistakeReactions(e.target.checked)}
                 disabled={mistakesOnly}
-                className="accent-gold w-3 h-3 disabled:opacity-40"
+                className="accent-gold w-4 h-4 disabled:opacity-40"
               />
               Show partner mistakes
             </label>
-            <label className="flex items-center gap-2 text-[10px] cursor-pointer text-muted-foreground hover:text-foreground mt-1">
+            <label className="flex items-center gap-2 text-[10px] cursor-pointer text-muted-foreground hover:text-foreground min-h-[36px]">
               <input
                 type="checkbox"
                 checked={mistakesOnly}
                 onChange={(e) => setMistakesOnly(e.target.checked)}
-                className="accent-response-mistake w-3 h-3"
+                className="accent-response-mistake w-4 h-4"
               />
               Mistakes only
             </label>
@@ -333,7 +384,7 @@ export const Sidebar = () => {
                 return (
                   <label
                     key={c}
-                    className="flex items-center gap-2 text-[11px] cursor-pointer hover:text-foreground text-muted-foreground"
+                    className="flex items-center gap-2 text-[11px] cursor-pointer hover:text-foreground text-muted-foreground min-h-[36px]"
                   >
                     <input
                       type="checkbox"
@@ -344,7 +395,7 @@ export const Sidebar = () => {
                           : [...filters.chains, c];
                         setFilters({ chains: next });
                       }}
-                      className="accent-gold w-3 h-3"
+                      className="accent-gold w-4 h-4"
                     />
                     {formatChainFamilyLabel(c)}
                   </label>
@@ -354,7 +405,7 @@ export const Sidebar = () => {
           </div>
         </div>
       </div>
-    </aside>
+    </div>
   );
 };
 
@@ -373,18 +424,20 @@ const FilterRow = ({
   </div>
 );
 
-/** Plain click: exclusive select (or clear with `null`). Ctrl/Cmd+click: toggle. */
 function pillSelection<T extends string>(
   current: T[],
   value: T | null,
   e: MouseEvent,
+  touchMulti = false,
 ): T[] {
   if (value === null) return [];
-  if (e.ctrlKey || e.metaKey) {
+  const multi = touchMulti || e.ctrlKey || e.metaKey;
+  if (multi) {
     return current.includes(value)
       ? current.filter((x) => x !== value)
       : [...current, value];
   }
+  if (current.length === 1 && current[0] === value) return [];
   return [value];
 }
 
@@ -400,7 +453,7 @@ const Pill = ({
   <button
     onClick={onClick}
     className={cn(
-      "px-2 py-1 rounded text-[10px] uppercase tracking-wider border transition-colors",
+      "px-2.5 py-1.5 rounded text-[10px] uppercase tracking-wider border transition-colors min-h-[36px]",
       active
         ? "border-gold bg-gold text-background"
         : "border-border text-muted-foreground hover:border-gold/60 hover:text-foreground",
